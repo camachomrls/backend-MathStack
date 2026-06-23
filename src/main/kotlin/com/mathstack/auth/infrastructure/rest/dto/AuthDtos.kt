@@ -24,6 +24,19 @@ data class RegisterRequest(
 )
 
 @Serializable
+data class LoginWithGoogleRequest(
+    val email: String,
+    val username: String,
+    val firebaseUid: String? = null
+)
+
+fun LoginWithGoogleRequest.toCommand() = com.mathstack.auth.application.LoginWithGoogleCommand(
+    email = email,
+    username = username,
+    firebaseUid = firebaseUid
+)
+
+@Serializable
 data class AuthResponse(
     val token: String,
     val user: UserResponse,

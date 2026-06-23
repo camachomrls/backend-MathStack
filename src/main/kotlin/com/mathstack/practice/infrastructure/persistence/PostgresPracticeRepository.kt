@@ -99,4 +99,12 @@ class PostgresPracticeRepository : PracticeRepository {
         }
         LearningPathsTable.selectAll().where { (LearningPathsTable.userId eq path.userId) and (LearningPathsTable.lessonId eq path.lessonId) }.single().toLearningPath()
     }
+
+    override fun findAllDiagnostics(): List<com.mathstack.practice.domain.model.DiagnosticResult> = transaction {
+        DiagnosticResultsTable.selectAll().map { it.toDiagnosticResult() }
+    }
+
+    override fun findAllSessions(): List<PracticeSession> = transaction {
+        PracticeSessionsTable.selectAll().map { it.toPracticeSession() }
+    }
 }

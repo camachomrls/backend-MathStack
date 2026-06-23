@@ -55,6 +55,11 @@ class PostgresUserRepository : UserRepository {
                 ?.toUser()
         }
 
+    override fun findAll(): List<User> =
+        transaction {
+            UserTable.selectAll().map { it.toUser() }
+        }
+
     override fun existsById(id: UUID): Boolean =
         transaction {
             UserTable

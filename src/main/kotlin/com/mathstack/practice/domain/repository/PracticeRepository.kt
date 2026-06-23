@@ -15,4 +15,7 @@ interface PracticeRepository {
     
     fun createDiagnosticResult(result: com.mathstack.practice.domain.model.DiagnosticResult): com.mathstack.practice.domain.model.DiagnosticResult
     fun createLearningPath(path: com.mathstack.practice.domain.model.LearningPath): com.mathstack.practice.domain.model.LearningPath
+    
+    fun findAllDiagnostics(): List<com.mathstack.practice.domain.model.DiagnosticResult>
+    fun findAllSessions(): List<PracticeSession>
 }

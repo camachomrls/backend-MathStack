@@ -10,6 +10,7 @@ interface UserRepository {
     fun findUserById(id: UUID): User?
     fun findUserByFirebaseUid(firebaseUid: String): User?
     fun findUserByEmail(email: String): User?
+    fun findAll(): List<User>
     fun existsById(id: UUID): Boolean
     fun updateUser(user: User): User?
     fun deleteUser(id: UUID): Boolean

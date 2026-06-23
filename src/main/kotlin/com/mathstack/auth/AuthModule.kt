@@ -12,5 +12,6 @@ val authModule = module {
     single<PasswordHasher> { BCryptPasswordHasher() }
     single<TokenService> { JwtTokenService(get()) }
     single { LoginUseCase(get(), get(), get()) }
-    single { RegisterUseCase(get(), get(), get()) }
+    factory { RegisterUseCase(get(), get(), get()) }
+    factory { com.mathstack.auth.application.LoginWithGoogleUseCase(get(), get()) }
 }

@@ -1,6 +1,7 @@
 package com.mathstack
 
 import com.mathstack.academic.infrastructure.rest.academicRouting
+import com.mathstack.admin.infrastructure.rest.adminRouting
 import com.mathstack.auth.infrastructure.rest.authRouting
 import com.mathstack.practice.infrastructure.rest.practiceRouting
 import com.mathstack.shared.infrastructure.database.DatabaseFactory
@@ -32,5 +33,6 @@ fun Application.module() {
         practiceRouting()
         socialRouting()
         notificationRouting()
+        adminRouting()
     }
 }

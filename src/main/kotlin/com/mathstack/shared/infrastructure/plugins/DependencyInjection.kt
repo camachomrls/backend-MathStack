@@ -12,6 +12,7 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.koin.dsl.module
 
+import com.mathstack.admin.adminModule
 import com.mathstack.notifications.notificationModule
 import com.mathstack.social.socialModule
 
@@ -30,7 +31,8 @@ fun Application.configureDependencyInjection() {
             storeModule,
             practiceModule,
             socialModule,
-            notificationModule
+            notificationModule,
+            adminModule
         )
     }
 }

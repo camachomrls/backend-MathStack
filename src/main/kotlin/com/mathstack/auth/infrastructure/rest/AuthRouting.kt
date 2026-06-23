@@ -18,10 +18,16 @@ import org.koin.ktor.ext.inject
 fun Route.authRouting() {
     val loginUseCase by inject<LoginUseCase>()
     val registerUseCase by inject<RegisterUseCase>()
+    val loginWithGoogleUseCase by inject<com.mathstack.auth.application.LoginWithGoogleUseCase>()
 
     route("/api/v1/auth") {
         post("/login") {
             val session = loginUseCase(call.receive<LoginRequest>().toCommand())
+            call.respond(HttpStatusCode.OK, session.toResponse())
+        }
+
+        post("/google") {
+            val session = loginWithGoogleUseCase(call.receive<com.mathstack.auth.infrastructure.rest.dto.LoginWithGoogleRequest>().toCommand())
             call.respond(HttpStatusCode.OK, session.toResponse())
         }
 

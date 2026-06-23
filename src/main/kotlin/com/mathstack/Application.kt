@@ -8,16 +8,20 @@ import com.mathstack.shared.infrastructure.plugins.configureDependencyInjection
 import com.mathstack.shared.infrastructure.plugins.configureSecurity
 import com.mathstack.shared.infrastructure.plugins.configureSerialization
 import com.mathstack.shared.infrastructure.plugins.configureStatusPages
+import com.mathstack.shared.infrastructure.plugins.configureSwagger
 import com.mathstack.store.infrastructure.rest.storeRouting
 import com.mathstack.users.infrastructure.rest.userRouting
 import io.ktor.server.application.Application
 import io.ktor.server.routing.routing
+import com.mathstack.social.infrastructure.rest.socialRouting
+import com.mathstack.notifications.infrastructure.rest.notificationRouting
 
 fun Application.module() {
     configureSerialization()
     configureStatusPages()
     configureDependencyInjection()
     configureSecurity()
+    configureSwagger()
     DatabaseFactory.init(environment.config)
 
     routing {
@@ -26,5 +30,7 @@ fun Application.module() {
         academicRouting()
         storeRouting()
         practiceRouting()
+        socialRouting()
+        notificationRouting()
     }
 }

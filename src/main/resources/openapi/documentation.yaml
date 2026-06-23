@@ -1,0 +1,289 @@
+openapi: 3.0.3
+info:
+  title: MathStack API
+  description: API catalog for the MathStack gamified math learning platform. All academic content fields support escaped TeX/LaTeX formatting for mathematical representation.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /api/v1/auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /api/v1/auth/login:
+    post:
+      summary: Login
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /api/v1/academic/subjects:
+    get:
+      summary: List all subjects
+      tags:
+        - Academic
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of subjects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectResponse'
+  /api/v1/academic/subjects/{subjectId}/lessons:
+    get:
+      summary: List lessons by subject
+      description: Retrieves all lessons for a given subject. The 'title' field supports escaped TeX/LaTeX formatting.
+      tags:
+        - Academic
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: subjectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonResponse'
+  /api/v1/social/friends/request:
+    post:
+      summary: Send a friend request
+      tags:
+        - Social
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendFriendRequest'
+      responses:
+        '200':
+          description: Friend request sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendRequestResponse'
+  /api/v1/social/challenges:
+    post:
+      summary: Create a new challenge
+      tags:
+        - Social
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChallengeRequest'
+      responses:
+        '201':
+          description: Challenge created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeResponse'
+  /api/v1/notifications/tokens:
+    post:
+      summary: Register FCM device token
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDeviceTokenRequest'
+      responses:
+        '200':
+          description: Token registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDeviceTokenResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - username
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+        firebaseUid:
+          type: string
+          nullable: true
+        accessLevel:
+          type: string
+          default: "STUDENT"
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        username:
+          type: string
+        accessLevel:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+    SubjectResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    LessonResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subjectId:
+          type: integer
+        lessonTypeId:
+          type: integer
+        title:
+          type: string
+          description: "Supports escaped TeX syntax."
+        difficultyLevel:
+          type: integer
+    SendFriendRequest:
+      type: object
+      required:
+        - friendId
+      properties:
+        friendId:
+          type: string
+          format: uuid
+    FriendRequestResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        friendId:
+          type: string
+          format: uuid
+        status:
+          type: string
+    CreateChallengeRequest:
+      type: object
+      required:
+        - exerciseId
+        - friendIds
+      properties:
+        exerciseId:
+          type: string
+          format: uuid
+        friendIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+    ChallengeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        creatorId:
+          type: string
+          format: uuid
+        exerciseId:
+          type: string
+          format: uuid
+        status:
+          type: string
+    RegisterDeviceTokenRequest:
+      type: object
+      required:
+        - fcmToken
+      properties:
+        fcmToken:
+          type: string
+    UserDeviceTokenResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fcmToken:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time

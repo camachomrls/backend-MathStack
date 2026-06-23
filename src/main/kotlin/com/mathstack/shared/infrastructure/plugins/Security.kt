@@ -46,10 +46,10 @@ private data class JwtConfig(
     companion object {
         fun from(config: ApplicationConfig): JwtConfig =
             JwtConfig(
-                issuer = config.property("jwt.issuer").getString(),
-                audience = config.property("jwt.audience").getString(),
-                realm = config.property("jwt.realm").getString(),
-                secret = config.property("jwt.secret").getString(),
+                issuer = com.mathstack.shared.infrastructure.config.Env.get("JWT_ISSUER") ?: config.property("jwt.issuer").getString(),
+                audience = com.mathstack.shared.infrastructure.config.Env.get("JWT_AUDIENCE") ?: config.property("jwt.audience").getString(),
+                realm = com.mathstack.shared.infrastructure.config.Env.get("JWT_REALM") ?: config.property("jwt.realm").getString(),
+                secret = com.mathstack.shared.infrastructure.config.Env.get("JWT_SECRET") ?: config.property("jwt.secret").getString(),
             )
     }
 }

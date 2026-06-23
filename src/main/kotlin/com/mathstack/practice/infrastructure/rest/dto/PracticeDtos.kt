@@ -57,3 +57,26 @@ fun StudentDashboardMetrics.toResponse() = StudentDashboardMetricsResponse(
     weeklyMinutesSpent = weeklyMinutesSpent,
     pendingLessonsCount = pendingLessonsCount,
 )
+
+@Serializable
+data class SubmitDiagnosticRequest(
+    val subjectId: Int,
+    val score: Int
+)
+
+@Serializable
+data class DiagnosticResponse(
+    val id: String,
+    val userId: String,
+    val subjectId: Int,
+    val deficiencyScore: Int,
+    val evaluatedAt: String,
+)
+
+fun com.mathstack.practice.domain.model.DiagnosticResult.toResponse() = DiagnosticResponse(
+    id = id.toString(),
+    userId = userId.toString(),
+    subjectId = subjectId,
+    deficiencyScore = deficiencyScore,
+    evaluatedAt = evaluatedAt.toString()
+)

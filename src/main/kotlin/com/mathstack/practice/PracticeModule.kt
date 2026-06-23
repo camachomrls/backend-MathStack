@@ -10,6 +10,7 @@ import org.koin.dsl.module
 val practiceModule = module {
     single<PracticeRepository> { PostgresPracticeRepository() }
     single { RegisterExerciseAttemptUseCase(get()) }
-    single { LogPracticeSessionUseCase(get()) }
+    single { LogPracticeSessionUseCase(get(), get()) }
     single { GetStudentDashboardMetricsUseCase(get()) }
+    single { com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase(get(), get()) }
 }

@@ -15,6 +15,9 @@ val jbcryptVersion = "0.4"
 group = "com.mathstack"
 version = "0.1.0"
 
+// Mueve la carpeta "build" fuera de OneDrive para evitar errores de archivos bloqueados
+layout.buildDirectory.set(File(System.getProperty("java.io.tmpdir"), "integrador5to_build"))
+
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
@@ -34,6 +37,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
@@ -41,6 +45,7 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresqlVersion")
     implementation("org.mindrot:jbcrypt:$jbcryptVersion")
     implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")

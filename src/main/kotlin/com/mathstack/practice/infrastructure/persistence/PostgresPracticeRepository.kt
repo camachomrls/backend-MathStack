@@ -78,4 +78,25 @@ class PostgresPracticeRepository : PracticeRepository {
             }
             .count().toInt()
     }
+
+    override fun createDiagnosticResult(result: com.mathstack.practice.domain.model.DiagnosticResult): com.mathstack.practice.domain.model.DiagnosticResult = transaction {
+        DiagnosticResultsTable.insert {
+            it[id] = result.id
+            it[userId] = result.userId
+            it[subjectId] = result.subjectId
+            it[deficiencyScore] = result.deficiencyScore
+            it[evaluatedAt] = result.evaluatedAt
+        }
+        DiagnosticResultsTable.selectAll().where { DiagnosticResultsTable.id eq result.id }.single().toDiagnosticResult()
+    }
+
+    override fun createLearningPath(path: com.mathstack.practice.domain.model.LearningPath): com.mathstack.practice.domain.model.LearningPath = transaction {
+        LearningPathsTable.insert {
+            it[userId] = path.userId
+            it[lessonId] = path.lessonId
+            it[statusId] = path.statusId
+            it[completedAt] = path.completedAt
+        }
+        LearningPathsTable.selectAll().where { (LearningPathsTable.userId eq path.userId) and (LearningPathsTable.lessonId eq path.lessonId) }.single().toLearningPath()
+    }
 }

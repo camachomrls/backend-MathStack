@@ -25,6 +25,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
+import com.mathstack.shared.infrastructure.plugins.authorize
 
 fun Route.storeRouting() {
     val createItemType by inject<CreateItemTypeUseCase>()
@@ -36,16 +37,19 @@ fun Route.storeRouting() {
     val listInventory by inject<ListInventoryUseCase>()
 
     authenticate("auth-jwt") {
-        route("/api/store") {
+        route("/api/v1/store") {
             get("/item-types") { call.respond(listItemTypes().map { it.toResponse() }) }
-            post("/item-types") {
-                val type = createItemType(call.receive<CreateItemTypeRequest>().validName())
-                call.respond(HttpStatusCode.Created, type.toResponse())
-            }
             get("/items") { call.respond(listStoreItems().map { it.toResponse() }) }
-            post("/items") {
-                val item = createStoreItem(call.receive<CreateStoreItemRequest>().toCommand())
-                call.respond(HttpStatusCode.Created, item.toResponse())
+            
+            authorize("ADMIN") {
+                post("/item-types") {
+                    val type = createItemType(call.receive<CreateItemTypeRequest>().validName())
+                    call.respond(HttpStatusCode.Created, type.toResponse())
+                }
+                post("/items") {
+                    val item = createStoreItem(call.receive<CreateStoreItemRequest>().toCommand())
+                    call.respond(HttpStatusCode.Created, item.toResponse())
+                }
             }
             get("/users/{userId}/inventory") {
                 val userId = (call.parameters["userId"] ?: "").toUuid("userId")

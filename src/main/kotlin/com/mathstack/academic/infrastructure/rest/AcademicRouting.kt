@@ -29,6 +29,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
+import com.mathstack.shared.infrastructure.plugins.authorize
 
 fun Route.academicRouting() {
     val createSubject by inject<CreateSubjectUseCase>()
@@ -43,44 +44,49 @@ fun Route.academicRouting() {
     val deleteExercise by inject<DeleteExerciseUseCase>()
 
     authenticate("auth-jwt") {
-        route("/api/academic") {
+        route("/api/v1/academic") {
             get("/subjects") { call.respond(listSubjects().map { it.toResponse() }) }
-            post("/subjects") {
-                val subject = createSubject(call.receive<CreateSubjectRequest>().validName())
-                call.respond(HttpStatusCode.Created, subject.toResponse())
-            }
-
             get("/lesson-types") { call.respond(listLessonTypes().map { it.toResponse() }) }
-            post("/lesson-types") {
-                val type = createLessonType(call.receive<CreateLessonTypeRequest>().validName())
-                call.respond(HttpStatusCode.Created, type.toResponse())
-            }
-
-            post("/lessons") {
-                val lesson = createLesson(call.receive<CreateLessonRequest>().toCommand())
-                call.respond(HttpStatusCode.Created, lesson.toResponse())
-            }
             get("/subjects/{subjectId}/lessons") {
                 val subjectId = call.parameters["subjectId"]?.toIntOrNull()
                     ?: throw com.mathstack.shared.domain.exception.ValidationException("subjectId must be a valid integer")
                 call.respond(lessonsBySubject(subjectId).map { it.toResponse() })
             }
-            delete("/lessons/{id}") {
-                deleteLesson((call.parameters["id"] ?: "").toUuid("id"))
-                call.respond(HttpStatusCode.NoContent)
-            }
-
-            post("/exercises") {
-                val exercise = createExercise(call.receive<CreateExerciseRequest>().toCommand())
-                call.respond(HttpStatusCode.Created, exercise.toResponse())
-            }
             get("/lessons/{lessonId}/exercises") {
                 val lessonId = (call.parameters["lessonId"] ?: "").toUuid("lessonId")
                 call.respond(exercisesByLesson(lessonId).map { it.toResponse() })
             }
-            delete("/exercises/{id}") {
-                deleteExercise((call.parameters["id"] ?: "").toUuid("id"))
-                call.respond(HttpStatusCode.NoContent)
+
+            authorize("ADMIN", "TEACHER") {
+                post("/subjects") {
+                    val subject = createSubject(call.receive<CreateSubjectRequest>().validName())
+                    call.respond(HttpStatusCode.Created, subject.toResponse())
+                }
+
+                post("/lesson-types") {
+                    val type = createLessonType(call.receive<CreateLessonTypeRequest>().validName())
+                    call.respond(HttpStatusCode.Created, type.toResponse())
+                }
+
+                post("/lessons") {
+                    val lesson = createLesson(call.receive<CreateLessonRequest>().toCommand())
+                    call.respond(HttpStatusCode.Created, lesson.toResponse())
+                }
+                
+                delete("/lessons/{id}") {
+                    deleteLesson((call.parameters["id"] ?: "").toUuid("id"))
+                    call.respond(HttpStatusCode.NoContent)
+                }
+
+                post("/exercises") {
+                    val exercise = createExercise(call.receive<CreateExerciseRequest>().toCommand())
+                    call.respond(HttpStatusCode.Created, exercise.toResponse())
+                }
+                
+                delete("/exercises/{id}") {
+                    deleteExercise((call.parameters["id"] ?: "").toUuid("id"))
+                    call.respond(HttpStatusCode.NoContent)
+                }
             }
         }
     }

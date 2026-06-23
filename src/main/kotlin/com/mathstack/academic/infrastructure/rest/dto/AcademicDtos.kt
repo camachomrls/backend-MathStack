@@ -12,7 +12,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class CreateSubjectRequest(val name: String)
 @Serializable data class CreateLessonTypeRequest(val name: String)
+/**
+ * Request to create a new Lesson.
+ * @param title The title of the lesson. Can contain TeX (LaTeX) syntax for mathematical representation.
+ * Remember to escape backslashes in JSON payloads (e.g., \\sqrt{x}).
+ */
 @Serializable data class CreateLessonRequest(val subjectId: Int, val lessonTypeId: Int, val title: String, val difficultyLevel: Int)
+
+/**
+ * Request to create a new Exercise.
+ * @param content The exercise content or question text. Expects TeX (LaTeX) syntax for mathematical formulas.
+ * Remember to escape backslashes in JSON payloads (e.g., \\int_0^1 x^2 dx).
+ */
 @Serializable data class CreateExerciseRequest(val lessonId: String, val content: String, val conceptTested: String? = null)
 
 @Serializable data class SubjectResponse(val id: Int, val name: String)

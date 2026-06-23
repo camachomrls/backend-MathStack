@@ -12,6 +12,9 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.koin.dsl.module
 
+import com.mathstack.notifications.notificationModule
+import com.mathstack.social.socialModule
+
 fun Application.configureDependencyInjection() {
     install(Koin) {
         slf4jLogger()
@@ -25,7 +28,9 @@ fun Application.configureDependencyInjection() {
             authModule,
             academicModule,
             storeModule,
-            practiceModule
+            practiceModule,
+            socialModule,
+            notificationModule
         )
     }
 }

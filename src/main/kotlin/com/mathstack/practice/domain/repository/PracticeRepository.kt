@@ -12,4 +12,7 @@ interface PracticeRepository {
     fun updatePracticeSession(session: PracticeSession): PracticeSession
     fun getWeeklyMinutesSpent(userId: UUID): Int
     fun getPendingLessonsCount(userId: UUID): Int
+    
+    fun createDiagnosticResult(result: com.mathstack.practice.domain.model.DiagnosticResult): com.mathstack.practice.domain.model.DiagnosticResult
+    fun createLearningPath(path: com.mathstack.practice.domain.model.LearningPath): com.mathstack.practice.domain.model.LearningPath
 }

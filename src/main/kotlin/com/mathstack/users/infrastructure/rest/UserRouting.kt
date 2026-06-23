@@ -35,7 +35,7 @@ fun Route.userRouting() {
     val updateGamificationStatsUseCase by inject<UpdateGamificationStatsUseCase>()
     val updateUserUseCase by inject<UpdateUserUseCase>()
 
-    route("/api/users") {
+    route("/api/v1/users") {
         post {
             val request = call.receive<CreateUserRequest>()
             val createdProfile = createUserUseCase(request.toCommand())

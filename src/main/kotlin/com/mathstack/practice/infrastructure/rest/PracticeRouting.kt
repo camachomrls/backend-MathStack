@@ -27,7 +27,7 @@ fun Route.practiceRouting() {
     val getDashboardMetrics by inject<GetStudentDashboardMetricsUseCase>()
 
     authenticate("auth-jwt") {
-        route("/api/practice/users/{userId}") {
+        route("/api/v1/practice/users/{userId}") {
             post("/attempts") {
                 val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
                 val userId = UUID.fromString(userIdStr)
@@ -59,6 +59,20 @@ fun Route.practiceRouting() {
                 val userId = UUID.fromString(userIdStr)
                 val metrics = getDashboardMetrics(userId)
                 call.respond(HttpStatusCode.OK, metrics.toResponse())
+            }
+
+            post("/diagnostics") {
+                val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
+                val userId = UUID.fromString(userIdStr)
+                val request = call.receive<com.mathstack.practice.infrastructure.rest.dto.SubmitDiagnosticRequest>()
+                val submitDiagnostic = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
+                val command = com.mathstack.practice.application.SubmitDiagnosticAnswersCommand(
+                    userId = userId,
+                    subjectId = request.subjectId,
+                    score = request.score
+                )
+                val result = submitDiagnostic(command)
+                call.respond(HttpStatusCode.Created, result.toResponse())
             }
         }
     }

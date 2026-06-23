@@ -19,7 +19,7 @@ fun Route.authRouting() {
     val loginUseCase by inject<LoginUseCase>()
     val registerUseCase by inject<RegisterUseCase>()
 
-    route("/auth") {
+    route("/api/v1/auth") {
         post("/login") {
             val session = loginUseCase(call.receive<LoginRequest>().toCommand())
             call.respond(HttpStatusCode.OK, session.toResponse())

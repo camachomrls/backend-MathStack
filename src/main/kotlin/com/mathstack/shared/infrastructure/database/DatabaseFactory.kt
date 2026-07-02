@@ -21,10 +21,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
     fun init(config: ApplicationConfig) {
-        // Conexión a la base de datos usando HikariCP
         Database.connect(hikari(config))
         
-        // ¡Magia! Esto crea todas las tablas automáticamente si no existen
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
                 UserTable,
@@ -46,7 +44,8 @@ object DatabaseFactory {
 
     private fun hikari(config: ApplicationConfig): HikariDataSource {
         return HikariDataSource().apply {
-            jdbcUrl = com.mathstack.shared.infrastructure.config.Env.get("DB_URL") ?: config.propertyOrNull("database.url")?.getString() ?: "jdbc:postgresql://localhost:5432/mathstack"
+            val rawUrl = com.mathstack.shared.infrastructure.config.Env.get("DB_URL") ?: config.propertyOrNull("database.url")?.getString() ?: "jdbc:postgresql://localhost:5432/mathstack"
+            jdbcUrl = if (rawUrl.startsWith("jdbc:")) rawUrl else "jdbc:$rawUrl"
             username = com.mathstack.shared.infrastructure.config.Env.get("DB_USER") ?: config.propertyOrNull("database.user")?.getString() ?: "postgres"
             password = com.mathstack.shared.infrastructure.config.Env.get("DB_PASSWORD") ?: config.propertyOrNull("database.password")?.getString() ?: "postgres"
             driverClassName = com.mathstack.shared.infrastructure.config.Env.get("DB_DRIVER") ?: config.propertyOrNull("database.driver")?.getString() ?: "org.postgresql.Driver"

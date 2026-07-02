@@ -11,7 +11,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=builder /app/build/install/mathstack-backend ./
+COPY --from=builder /app/build/install/MathStackBackend ./
 
 EXPOSE 8080
 

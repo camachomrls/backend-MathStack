@@ -15,9 +15,6 @@ val jbcryptVersion = "0.4"
 group = "com.mathstack"
 version = "0.1.0"
 
-// Mueve la carpeta "build" fuera de OneDrive para evitar errores de archivos bloqueados
-layout.buildDirectory.set(File(System.getProperty("java.io.tmpdir"), "integrador5to_build"))
-
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }

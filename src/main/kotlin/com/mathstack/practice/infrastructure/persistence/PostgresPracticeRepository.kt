@@ -74,7 +74,7 @@ class PostgresPracticeRepository : PracticeRepository {
         LearningPathsTable.selectAll()
             .where { 
                 (LearningPathsTable.userId eq userId) and 
-                ((LearningPathsTable.statusId eq "pending") or (LearningPathsTable.statusId eq "in_progress")) 
+                ((LearningPathsTable.status eq "pending") or (LearningPathsTable.status eq "in_progress")) 
             }
             .count().toInt()
     }
@@ -94,7 +94,7 @@ class PostgresPracticeRepository : PracticeRepository {
         LearningPathsTable.insert {
             it[userId] = path.userId
             it[lessonId] = path.lessonId
-            it[statusId] = path.statusId
+            it[status] = path.status
             it[completedAt] = path.completedAt
         }
         LearningPathsTable.selectAll().where { (LearningPathsTable.userId eq path.userId) and (LearningPathsTable.lessonId eq path.lessonId) }.single().toLearningPath()

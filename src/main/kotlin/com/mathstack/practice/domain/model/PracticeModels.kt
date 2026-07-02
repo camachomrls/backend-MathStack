@@ -15,7 +15,7 @@ data class DiagnosticResult(
 data class LearningPath(
     val userId: UUID,
     val lessonId: UUID,
-    val statusId: String, // 'pending', 'in_progress', 'completed'
+    val status: String, // 'pending', 'in_progress', 'completed'
     val completedAt: LocalDateTime?,
 )
 

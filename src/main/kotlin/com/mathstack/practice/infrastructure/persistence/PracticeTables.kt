@@ -17,7 +17,7 @@ object DiagnosticResultsTable : Table("diagnostic_results") {
 object LearningPathsTable : Table("learning_paths") {
     val userId = uuid("user_id")
     val lessonId = uuid("lesson_id")
-    val statusId = varchar("status_id", 50)
+    val status = varchar("status", 50)
     val completedAt = datetime("completed_at").nullable()
     
     override val primaryKey = PrimaryKey(userId, lessonId)

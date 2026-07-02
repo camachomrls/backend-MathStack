@@ -97,7 +97,7 @@ class SubmitDiagnosticAnswersUseCase(
                 com.mathstack.practice.domain.model.LearningPath(
                     userId = command.userId,
                     lessonId = lesson.id,
-                    statusId = status,
+                    status = status,
                     completedAt = null
                 )
             )

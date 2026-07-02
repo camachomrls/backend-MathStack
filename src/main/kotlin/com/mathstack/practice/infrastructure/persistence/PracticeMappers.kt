@@ -17,7 +17,7 @@ fun ResultRow.toDiagnosticResult() = DiagnosticResult(
 fun ResultRow.toLearningPath() = LearningPath(
     userId = this[LearningPathsTable.userId],
     lessonId = this[LearningPathsTable.lessonId],
-    statusId = this[LearningPathsTable.statusId],
+    status = this[LearningPathsTable.status],
     completedAt = this[LearningPathsTable.completedAt],
 )
 

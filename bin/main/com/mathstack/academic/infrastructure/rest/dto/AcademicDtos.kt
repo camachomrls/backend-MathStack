@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
  * @param title The title of the lesson. Can contain TeX (LaTeX) syntax for mathematical representation.
  * Remember to escape backslashes in JSON payloads (e.g., \\sqrt{x}).
  */
-@Serializable data class CreateLessonRequest(val subjectId: Int, val lessonTypeId: Int, val title: String, val difficultyLevel: Int)
+@Serializable data class CreateLessonRequest(val subjectId: Int, val lessonTypeId: Int, val title: String, val difficultyLevel: Int, val content: String? = null)
 
 /**
  * Request to create a new Exercise.
@@ -28,7 +28,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class SubjectResponse(val id: Int, val name: String)
 @Serializable data class LessonTypeResponse(val id: Int, val name: String)
-@Serializable data class LessonResponse(val id: String, val subjectId: Int, val lessonTypeId: Int, val title: String, val difficultyLevel: Int)
+@Serializable data class LessonResponse(val id: String, val subjectId: Int, val lessonTypeId: Int, val title: String, val difficultyLevel: Int, val content: String?)
 @Serializable data class ExerciseResponse(val id: String, val lessonId: String, val content: String, val conceptTested: String?)
 
 fun CreateSubjectRequest.validName(): String {
@@ -46,7 +46,7 @@ fun CreateLessonRequest.toCommand(): CreateLessonCommand {
     if (lessonTypeId <= 0) throw ValidationException("lessonTypeId must be positive")
     if (title.trim().length !in 3..200) throw ValidationException("title must contain between 3 and 200 characters")
     if (difficultyLevel !in 1..10) throw ValidationException("difficultyLevel must be between 1 and 10")
-    return CreateLessonCommand(subjectId, lessonTypeId, title.trim(), difficultyLevel)
+    return CreateLessonCommand(subjectId, lessonTypeId, title.trim(), difficultyLevel, content)
 }
 
 fun CreateExerciseRequest.toCommand(): CreateExerciseCommand {
@@ -56,7 +56,7 @@ fun CreateExerciseRequest.toCommand(): CreateExerciseCommand {
 
 fun Subject.toResponse(): SubjectResponse = SubjectResponse(id, name)
 fun LessonType.toResponse(): LessonTypeResponse = LessonTypeResponse(id, name)
-fun Lesson.toResponse(): LessonResponse = LessonResponse(id.toString(), subjectId, lessonTypeId, title, difficultyLevel)
+fun Lesson.toResponse(): LessonResponse = LessonResponse(id.toString(), subjectId, lessonTypeId, title, difficultyLevel, content)
 fun Exercise.toResponse(): ExerciseResponse = ExerciseResponse(id.toString(), lessonId.toString(), content, conceptTested)
 
 fun String.toUuid(field: String): UUID =

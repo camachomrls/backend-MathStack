@@ -7,6 +7,7 @@ import com.mathstack.academic.application.CreateSubjectUseCase
 import com.mathstack.academic.application.DeleteExerciseUseCase
 import com.mathstack.academic.application.DeleteLessonUseCase
 import com.mathstack.academic.application.GetExercisesByLessonUseCase
+import com.mathstack.academic.application.GetLessonByIdUseCase
 import com.mathstack.academic.application.GetLessonsBySubjectUseCase
 import com.mathstack.academic.application.ListLessonTypesUseCase
 import com.mathstack.academic.application.ListSubjectsUseCase
@@ -22,6 +23,7 @@ val academicModule = module {
     single { ListLessonTypesUseCase(get()) }
     single { CreateLessonUseCase(get()) }
     single { GetLessonsBySubjectUseCase(get()) }
+    single { GetLessonByIdUseCase(get()) }
     single { CreateExerciseUseCase(get()) }
     single { GetExercisesByLessonUseCase(get()) }
     single { DeleteLessonUseCase(get()) }

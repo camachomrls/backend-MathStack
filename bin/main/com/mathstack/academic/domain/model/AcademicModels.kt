@@ -12,6 +12,7 @@ data class Lesson(
     val lessonTypeId: Int,
     val title: String,
     val difficultyLevel: Int,
+    val content: String? = null,
 )
 
 data class Exercise(

@@ -3,6 +3,7 @@ package com.mathstack.users.infrastructure.rest
 import com.mathstack.shared.domain.exception.ValidationException
 import com.mathstack.users.application.CreateUserUseCase
 import com.mathstack.users.application.DeleteUserUseCase
+import com.mathstack.users.application.GetLeaderboardUseCase
 import com.mathstack.users.application.GetUserProfileUseCase
 import com.mathstack.users.application.UpdateGamificationStatsUseCase
 import com.mathstack.users.application.UpdateUserUseCase
@@ -31,6 +32,7 @@ import org.koin.ktor.ext.inject
 fun Route.userRouting() {
     val createUserUseCase by inject<CreateUserUseCase>()
     val deleteUserUseCase by inject<DeleteUserUseCase>()
+    val getLeaderboardUseCase by inject<GetLeaderboardUseCase>()
     val getUserProfileUseCase by inject<GetUserProfileUseCase>()
     val updateGamificationStatsUseCase by inject<UpdateGamificationStatsUseCase>()
     val updateUserUseCase by inject<UpdateUserUseCase>()
@@ -49,6 +51,13 @@ fun Route.userRouting() {
                 val profile = getUserProfileUseCase(userId)
 
                 call.respond(HttpStatusCode.OK, profile.toResponse())
+            }
+
+            get("/leaderboard") {
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
+                val leaderboard = getLeaderboardUseCase(limit)
+                
+                call.respond(HttpStatusCode.OK, leaderboard.map { it.toResponse() })
             }
 
             get("/{id}") {

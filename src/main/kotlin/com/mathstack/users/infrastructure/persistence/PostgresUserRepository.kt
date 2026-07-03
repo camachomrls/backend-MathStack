@@ -6,6 +6,7 @@ import com.mathstack.users.domain.model.UserProfile
 import com.mathstack.users.domain.repository.UserRepository
 import java.util.UUID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -143,6 +144,20 @@ class PostgresUserRepository : UserRepository {
                 ?: insertStatsInTransaction(UserGamificationStats(userId = userId))
 
             UserProfile(user = user, gamificationStats = stats)
+        }
+
+    override fun getLeaderboard(limit: Int): List<UserProfile> =
+        transaction {
+            (UserTable innerJoin UserGamificationStatsTable)
+                .selectAll()
+                .orderBy(UserGamificationStatsTable.xpPoints to SortOrder.DESC)
+                .limit(limit)
+                .map { row ->
+                    UserProfile(
+                        user = row.toUser(),
+                        gamificationStats = row.toUserGamificationStats()
+                    )
+                }
         }
 
     private fun findUserByIdInTransaction(id: UUID): User? =

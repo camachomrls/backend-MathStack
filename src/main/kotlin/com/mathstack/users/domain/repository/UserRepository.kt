@@ -22,4 +22,5 @@ interface UserRepository {
     fun deleteStats(userId: UUID): Boolean
 
     fun findProfileByUserId(userId: UUID): UserProfile?
+    fun getLeaderboard(limit: Int): List<UserProfile>
 }

@@ -46,6 +46,7 @@ class PostgresAcademicRepository : AcademicRepository {
             it[lessonTypeId] = lesson.lessonTypeId
             it[title] = lesson.title
             it[difficultyLevel] = lesson.difficultyLevel
+            it[content] = lesson.content
         }
         findLessonByIdInTransaction(lesson.id)!!
     }
@@ -64,6 +65,7 @@ class PostgresAcademicRepository : AcademicRepository {
             it[lessonTypeId] = lesson.lessonTypeId
             it[title] = lesson.title
             it[difficultyLevel] = lesson.difficultyLevel
+            it[content] = lesson.content
         }
         if (updated == 0) null else findLessonByIdInTransaction(lesson.id)
     }

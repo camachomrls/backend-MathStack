@@ -17,6 +17,7 @@ fun ResultRow.toLesson(): Lesson =
         lessonTypeId = this[LessonTable.lessonTypeId],
         title = this[LessonTable.title],
         difficultyLevel = this[LessonTable.difficultyLevel],
+        content = this[LessonTable.content],
     )
 
 fun ResultRow.toExercise(): Exercise =

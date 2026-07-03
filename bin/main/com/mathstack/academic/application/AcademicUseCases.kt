@@ -38,6 +38,7 @@ class CreateLessonUseCase(private val repository: AcademicRepository) {
                 lessonTypeId = command.lessonTypeId,
                 title = command.title.trim(),
                 difficultyLevel = command.difficultyLevel,
+                content = command.content?.trim(),
             ),
         )
     }
@@ -75,6 +76,13 @@ class GetExercisesByLessonUseCase(private val repository: AcademicRepository) {
     }
 }
 
+class GetLessonByIdUseCase(private val repository: AcademicRepository) {
+    operator fun invoke(id: UUID): Lesson {
+        return repository.findLessonById(id)
+            ?: throw NotFoundException("Lesson $id was not found")
+    }
+}
+
 class DeleteLessonUseCase(private val repository: AcademicRepository) {
     operator fun invoke(id: UUID) {
         if (!repository.deleteLesson(id)) throw NotFoundException("Lesson $id was not found")
@@ -92,6 +100,7 @@ data class CreateLessonCommand(
     val lessonTypeId: Int,
     val title: String,
     val difficultyLevel: Int,
+    val content: String? = null,
 )
 
 data class CreateExerciseCommand(

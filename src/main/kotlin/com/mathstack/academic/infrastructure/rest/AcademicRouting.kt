@@ -7,6 +7,7 @@ import com.mathstack.academic.application.CreateSubjectUseCase
 import com.mathstack.academic.application.DeleteExerciseUseCase
 import com.mathstack.academic.application.DeleteLessonUseCase
 import com.mathstack.academic.application.GetExercisesByLessonUseCase
+import com.mathstack.academic.application.GetLessonByIdUseCase
 import com.mathstack.academic.application.GetLessonsBySubjectUseCase
 import com.mathstack.academic.application.ListLessonTypesUseCase
 import com.mathstack.academic.application.ListSubjectsUseCase
@@ -37,6 +38,7 @@ fun Route.academicRouting() {
     val createLessonType by inject<CreateLessonTypeUseCase>()
     val listLessonTypes by inject<ListLessonTypesUseCase>()
     val createLesson by inject<CreateLessonUseCase>()
+    val getLessonById by inject<GetLessonByIdUseCase>()
     val lessonsBySubject by inject<GetLessonsBySubjectUseCase>()
     val createExercise by inject<CreateExerciseUseCase>()
     val exercisesByLesson by inject<GetExercisesByLessonUseCase>()
@@ -55,6 +57,10 @@ fun Route.academicRouting() {
             get("/lessons/{lessonId}/exercises") {
                 val lessonId = (call.parameters["lessonId"] ?: "").toUuid("lessonId")
                 call.respond(exercisesByLesson(lessonId).map { it.toResponse() })
+            }
+            get("/lessons/{lessonId}") {
+                val lessonId = (call.parameters["lessonId"] ?: "").toUuid("lessonId")
+                call.respond(getLessonById(lessonId).toResponse())
             }
 
             authorize("ADMIN", "TEACHER") {

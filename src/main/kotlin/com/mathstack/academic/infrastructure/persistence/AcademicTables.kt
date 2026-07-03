@@ -20,6 +20,7 @@ object LessonTable : Table("lessons") {
     val lessonTypeId = integer("lesson_type_id").references(LessonTypeTable.id)
     val title = varchar("title", 200)
     val difficultyLevel = integer("difficulty_level")
+    val content = text("content").nullable()
     override val primaryKey = PrimaryKey(id)
 }
 

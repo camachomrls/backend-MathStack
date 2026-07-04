@@ -37,12 +37,24 @@ fun Route.adminRouting() {
     val listAllExercisesUseCase by inject<com.mathstack.admin.application.ListAllExercisesUseCase>()
     val listAllChallengesUseCase by inject<com.mathstack.admin.application.ListAllChallengesUseCase>()
     val createAdminChallengeUseCase by inject<com.mathstack.admin.application.CreateAdminChallengeUseCase>()
+    val getAdminSettingsUseCase by inject<com.mathstack.admin.application.GetAdminSettingsUseCase>()
+    val updateAdminSettingsUseCase by inject<com.mathstack.admin.application.UpdateAdminSettingsUseCase>()
+    val emailService by inject<com.mathstack.shared.infrastructure.email.EmailService>()
 
     authenticate("auth-jwt") {
         authorize("ADMIN") {
             route("/api/v1/admin") {
                 get("/dashboard/stats") {
                     call.respond(getDashboardStatsUseCase())
+                }
+
+                get("/settings") {
+                    call.respond(getAdminSettingsUseCase())
+                }
+
+                put("/settings") {
+                    val settings = call.receive<com.mathstack.admin.domain.model.AdminSettings>()
+                    call.respond(updateAdminSettingsUseCase(settings))
                 }
                 
                 get("/lessons") {
@@ -73,6 +85,15 @@ fun Route.adminRouting() {
                     )
                     
                     val challenge = createAdminChallengeUseCase(command)
+                    
+                    val settings = getAdminSettingsUseCase()
+                    if (settings.challengeAlerts) {
+                        emailService.sendEmail(
+                            to = "mathstacksoporte@gmail.com",
+                            subject = "Nuevo Reto Creado: \${challenge.title}",
+                            htmlContent = "<h3>Se ha creado un nuevo reto</h3><p><strong>Título:</strong> \${challenge.title}</p><p><strong>Recompensa:</strong> \${challenge.rewardCoins} coins</p>"
+                        )
+                    }
                     
                     call.respond(HttpStatusCode.Created, com.mathstack.admin.infrastructure.rest.dto.ChallengeResponse(
                         id = challenge.id.toString(),

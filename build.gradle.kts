@@ -50,4 +50,5 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("org.apache.commons:commons-email:1.5")
 }

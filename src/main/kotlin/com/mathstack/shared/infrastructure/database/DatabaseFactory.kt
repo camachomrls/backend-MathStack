@@ -25,6 +25,9 @@ import io.ktor.server.config.ApplicationConfig
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object DatabaseFactory {
     fun init(config: ApplicationConfig) {
@@ -53,6 +56,25 @@ object DatabaseFactory {
                 GroupsTable,
                 GroupMembersTable
             )
+
+            val defaultSubjects = listOf(
+                "Aritmética",
+                "Álgebra",
+                "Cálculo Integral",
+                "Cálculo Diferencial",
+                "Cálculo de Varias Variables",
+                "Ecuaciones Diferenciales"
+            )
+            
+            val existingSubjects = SubjectTable.selectAll().map { it[SubjectTable.name] }
+            
+            defaultSubjects.forEach { subjectName ->
+                if (!existingSubjects.contains(subjectName)) {
+                    SubjectTable.insert {
+                        it[name] = subjectName
+                    }
+                }
+            }
         }
     }
 

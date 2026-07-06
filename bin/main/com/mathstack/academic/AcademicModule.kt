@@ -11,6 +11,8 @@ import com.mathstack.academic.application.GetLessonByIdUseCase
 import com.mathstack.academic.application.GetLessonsBySubjectUseCase
 import com.mathstack.academic.application.ListLessonTypesUseCase
 import com.mathstack.academic.application.ListSubjectsUseCase
+import com.mathstack.academic.application.UpdateLessonUseCase
+import com.mathstack.academic.application.UpdateExerciseUseCase
 import com.mathstack.academic.domain.repository.AcademicRepository
 import com.mathstack.academic.infrastructure.persistence.PostgresAcademicRepository
 import org.koin.dsl.module
@@ -28,4 +30,6 @@ val academicModule = module {
     single { GetExercisesByLessonUseCase(get()) }
     single { DeleteLessonUseCase(get()) }
     single { DeleteExerciseUseCase(get()) }
+    single { UpdateLessonUseCase(get()) }
+    single { UpdateExerciseUseCase(get()) }
 }

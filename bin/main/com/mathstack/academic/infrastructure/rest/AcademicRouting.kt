@@ -11,10 +11,14 @@ import com.mathstack.academic.application.GetLessonByIdUseCase
 import com.mathstack.academic.application.GetLessonsBySubjectUseCase
 import com.mathstack.academic.application.ListLessonTypesUseCase
 import com.mathstack.academic.application.ListSubjectsUseCase
+import com.mathstack.academic.application.UpdateLessonUseCase
+import com.mathstack.academic.application.UpdateExerciseUseCase
 import com.mathstack.academic.infrastructure.rest.dto.CreateExerciseRequest
 import com.mathstack.academic.infrastructure.rest.dto.CreateLessonRequest
 import com.mathstack.academic.infrastructure.rest.dto.CreateLessonTypeRequest
 import com.mathstack.academic.infrastructure.rest.dto.CreateSubjectRequest
+import com.mathstack.academic.infrastructure.rest.dto.UpdateLessonRequest
+import com.mathstack.academic.infrastructure.rest.dto.UpdateExerciseRequest
 import com.mathstack.academic.infrastructure.rest.dto.toCommand
 import com.mathstack.academic.infrastructure.rest.dto.toResponse
 import com.mathstack.academic.infrastructure.rest.dto.toUuid
@@ -28,6 +32,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import com.mathstack.shared.infrastructure.plugins.authorize
@@ -44,6 +49,8 @@ fun Route.academicRouting() {
     val exercisesByLesson by inject<GetExercisesByLessonUseCase>()
     val deleteLesson by inject<DeleteLessonUseCase>()
     val deleteExercise by inject<DeleteExerciseUseCase>()
+    val updateLesson by inject<UpdateLessonUseCase>()
+    val updateExercise by inject<UpdateExerciseUseCase>()
 
     authenticate("auth-jwt") {
         route("/api/v1/academic") {
@@ -84,6 +91,13 @@ fun Route.academicRouting() {
                     call.respond(HttpStatusCode.NoContent)
                 }
 
+                patch("/lessons/{id}") {
+                    val lessonId = (call.parameters["id"] ?: "").toUuid("id")
+                    val command = call.receive<UpdateLessonRequest>().toCommand()
+                    val lesson = updateLesson(lessonId, command)
+                    call.respond(HttpStatusCode.OK, lesson.toResponse())
+                }
+
                 post("/exercises") {
                     val exercise = createExercise(call.receive<CreateExerciseRequest>().toCommand())
                     call.respond(HttpStatusCode.Created, exercise.toResponse())
@@ -92,6 +106,13 @@ fun Route.academicRouting() {
                 delete("/exercises/{id}") {
                     deleteExercise((call.parameters["id"] ?: "").toUuid("id"))
                     call.respond(HttpStatusCode.NoContent)
+                }
+
+                patch("/exercises/{id}") {
+                    val exerciseId = (call.parameters["id"] ?: "").toUuid("id")
+                    val command = call.receive<UpdateExerciseRequest>().toCommand()
+                    val exercise = updateExercise(exerciseId, command)
+                    call.respond(HttpStatusCode.OK, exercise.toResponse())
                 }
             }
         }

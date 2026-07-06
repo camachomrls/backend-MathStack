@@ -108,3 +108,62 @@ data class CreateExerciseCommand(
     val content: String,
     val conceptTested: String?,
 )
+
+class UpdateLessonUseCase(private val repository: AcademicRepository) {
+    operator fun invoke(id: UUID, command: UpdateLessonCommand): Lesson {
+        val existingLesson = repository.findLessonById(id)
+            ?: throw NotFoundException("Lesson $id was not found")
+
+        command.subjectId?.let {
+            repository.findSubjectById(it) ?: throw NotFoundException("Subject $it was not found")
+        }
+        command.lessonTypeId?.let {
+            repository.findLessonTypeById(it) ?: throw NotFoundException("Lesson type $it was not found")
+        }
+
+        val updatedLesson = existingLesson.copy(
+            subjectId = command.subjectId ?: existingLesson.subjectId,
+            lessonTypeId = command.lessonTypeId ?: existingLesson.lessonTypeId,
+            title = command.title?.trim() ?: existingLesson.title,
+            difficultyLevel = command.difficultyLevel ?: existingLesson.difficultyLevel,
+            content = if (command.content != null) command.content.trim() else existingLesson.content
+        )
+
+        return repository.updateLesson(updatedLesson)
+            ?: throw NotFoundException("Lesson $id was not found")
+    }
+}
+
+class UpdateExerciseUseCase(private val repository: AcademicRepository) {
+    operator fun invoke(id: UUID, command: UpdateExerciseCommand): Exercise {
+        val existingExercise = repository.findExerciseById(id)
+            ?: throw NotFoundException("Exercise $id was not found")
+
+        command.lessonId?.let {
+            repository.findLessonById(it) ?: throw NotFoundException("Lesson $it was not found")
+        }
+
+        val updatedExercise = existingExercise.copy(
+            lessonId = command.lessonId ?: existingExercise.lessonId,
+            content = command.content?.trim() ?: existingExercise.content,
+            conceptTested = if (command.conceptTested != null) command.conceptTested.trim() else existingExercise.conceptTested
+        )
+
+        return repository.updateExercise(updatedExercise)
+            ?: throw NotFoundException("Exercise $id was not found")
+    }
+}
+
+data class UpdateLessonCommand(
+    val subjectId: Int? = null,
+    val lessonTypeId: Int? = null,
+    val title: String? = null,
+    val difficultyLevel: Int? = null,
+    val content: String? = null,
+)
+
+data class UpdateExerciseCommand(
+    val lessonId: UUID? = null,
+    val content: String? = null,
+    val conceptTested: String? = null,
+)

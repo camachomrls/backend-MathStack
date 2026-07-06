@@ -62,3 +62,20 @@ fun Exercise.toResponse(): ExerciseResponse = ExerciseResponse(id.toString(), le
 fun String.toUuid(field: String): UUID =
     runCatching { UUID.fromString(this) }
         .getOrElse { throw ValidationException("$field must be a valid UUID") }
+
+@Serializable data class UpdateLessonRequest(val subjectId: Int? = null, val lessonTypeId: Int? = null, val title: String? = null, val difficultyLevel: Int? = null, val content: String? = null)
+
+@Serializable data class UpdateExerciseRequest(val lessonId: String? = null, val content: String? = null, val conceptTested: String? = null)
+
+fun UpdateLessonRequest.toCommand(): com.mathstack.academic.application.UpdateLessonCommand {
+    if (subjectId != null && subjectId <= 0) throw ValidationException("subjectId must be positive")
+    if (lessonTypeId != null && lessonTypeId <= 0) throw ValidationException("lessonTypeId must be positive")
+    if (title != null && title.trim().length !in 3..200) throw ValidationException("title must contain between 3 and 200 characters")
+    if (difficultyLevel != null && difficultyLevel !in 1..10) throw ValidationException("difficultyLevel must be between 1 and 10")
+    return com.mathstack.academic.application.UpdateLessonCommand(subjectId, lessonTypeId, title?.trim(), difficultyLevel, content)
+}
+
+fun UpdateExerciseRequest.toCommand(): com.mathstack.academic.application.UpdateExerciseCommand {
+    if (content != null && content.trim().isBlank()) throw ValidationException("content cannot be blank")
+    return com.mathstack.academic.application.UpdateExerciseCommand(lessonId?.toUuid("lessonId"), content?.trim(), conceptTested?.trim())
+}

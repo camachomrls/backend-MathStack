@@ -75,6 +75,13 @@ object DatabaseFactory {
                     }
                 }
             }
+
+            val existingLessonTypes = LessonTypeTable.selectAll().map { it[LessonTypeTable.name] }
+            if (!existingLessonTypes.contains("Estándar")) {
+                LessonTypeTable.insert {
+                    it[name] = "Estándar"
+                }
+            }
         }
     }
 

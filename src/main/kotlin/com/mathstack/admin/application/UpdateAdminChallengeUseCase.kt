@@ -4,6 +4,9 @@ import com.mathstack.admin.domain.model.AdminChallenge
 import com.mathstack.admin.domain.repository.AdminChallengeRepository
 import java.time.LocalDateTime
 import java.util.UUID
+import kotlinx.serialization.Serializable
+
+@Serializable
 
 data class UpdateAdminChallengeCommand(
     val title: String?,

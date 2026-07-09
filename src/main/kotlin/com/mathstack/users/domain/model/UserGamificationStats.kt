@@ -13,6 +13,7 @@ data class UserGamificationStats(
     val maxStreak: Int = 0,
     val minutesPracticed: Int = 0,
     val lastPracticeDate: LocalDate? = null,
+    val lastDiagnosticDate: java.time.LocalDateTime? = null,
 ) {
     init {
         require(coins >= 0) { "coins must be greater than or equal to 0" }

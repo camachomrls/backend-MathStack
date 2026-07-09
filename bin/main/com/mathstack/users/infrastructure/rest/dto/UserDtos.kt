@@ -57,6 +57,7 @@ data class UserGamificationStatsResponse(
     val maxStreak: Int,
     val minutesPracticed: Int,
     val lastPracticeDate: String?,
+    val lastDiagnosticDate: String?,
 )
 
 @Serializable
@@ -117,6 +118,7 @@ fun UserGamificationStats.toResponse(): UserGamificationStatsResponse =
         maxStreak = maxStreak,
         minutesPracticed = minutesPracticed,
         lastPracticeDate = lastPracticeDate?.toString(),
+        lastDiagnosticDate = lastDiagnosticDate?.toString(),
     )
 
 fun UserProfile.toResponse(): UserProfileResponse =

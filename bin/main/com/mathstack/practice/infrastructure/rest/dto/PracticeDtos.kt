@@ -59,9 +59,14 @@ fun StudentDashboardMetrics.toResponse() = StudentDashboardMetricsResponse(
 )
 
 @Serializable
+data class DiagnosticAnswerDto(
+    val exerciseId: String,
+    val isCorrect: Boolean
+)
+
+@Serializable
 data class SubmitDiagnosticRequest(
-    val subjectId: Int,
-    val score: Int
+    val answers: List<DiagnosticAnswerDto>
 )
 
 @Serializable

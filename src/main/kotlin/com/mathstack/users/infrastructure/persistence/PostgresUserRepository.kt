@@ -135,6 +135,7 @@ class PostgresUserRepository : UserRepository {
                 it[maxStreak] = stats.maxStreak
                 it[minutesPracticed] = stats.minutesPracticed
                 it[lastPracticeDate] = stats.lastPracticeDate
+                it[lastDiagnosticDate] = stats.lastDiagnosticDate
             }
 
             if (updatedRows == 0) {
@@ -197,6 +198,7 @@ class PostgresUserRepository : UserRepository {
             it[maxStreak] = stats.maxStreak
             it[minutesPracticed] = stats.minutesPracticed
             it[lastPracticeDate] = stats.lastPracticeDate
+            it[lastDiagnosticDate] = stats.lastDiagnosticDate
         }
 
         return findStatsByUserIdInTransaction(stats.userId)!!

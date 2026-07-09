@@ -44,11 +44,21 @@ class CreateLessonUseCase(private val repository: AcademicRepository) {
     }
 }
 
-class GetLessonsBySubjectUseCase(private val repository: AcademicRepository) {
-    operator fun invoke(subjectId: Int): List<Lesson> {
+class GetLessonsBySubjectUseCase(
+    private val repository: AcademicRepository,
+    private val userProficiencyRepository: com.mathstack.users.domain.repository.UserProficiencyRepository
+) {
+    operator fun invoke(subjectId: Int, userId: UUID): List<Lesson> {
         repository.findSubjectById(subjectId)
             ?: throw NotFoundException("Subject $subjectId was not found")
-        return repository.listLessonsBySubject(subjectId)
+        val lessons = repository.listLessonsBySubject(subjectId)
+        val proficiency = userProficiencyRepository.getProficiency(userId, subjectId)
+        
+        return if (proficiency != null) {
+            lessons.filter { it.difficultyLevel <= proficiency }
+        } else {
+            lessons
+        }
     }
 }
 

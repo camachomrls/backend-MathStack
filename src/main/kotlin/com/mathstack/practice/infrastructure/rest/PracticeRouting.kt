@@ -61,18 +61,36 @@ fun Route.practiceRouting() {
                 call.respond(HttpStatusCode.OK, metrics.toResponse())
             }
 
+            get("/diagnostics/generate") {
+                val generateQuiz = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.practice.application.GenerateDiagnosticQuizUseCase>()
+                val exercises = generateQuiz()
+                // Map exercises to DTO (assume toResponse exists in AcademicDtos)
+                val responseList = exercises.map { com.mathstack.academic.infrastructure.rest.dto.ExerciseResponse(
+                    id = it.id.toString(),
+                    lessonId = it.lessonId.toString(),
+                    content = it.content,
+                    conceptTested = it.conceptTested
+                ) }
+                call.respond(HttpStatusCode.OK, responseList)
+            }
+
             post("/diagnostics") {
                 val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
                 val userId = UUID.fromString(userIdStr)
                 val request = call.receive<com.mathstack.practice.infrastructure.rest.dto.SubmitDiagnosticRequest>()
                 val submitDiagnostic = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
+                
+                val answers = request.answers.map { 
+                    com.mathstack.practice.application.DiagnosticAnswer(UUID.fromString(it.exerciseId), it.isCorrect) 
+                }
+                
                 val command = com.mathstack.practice.application.SubmitDiagnosticAnswersCommand(
                     userId = userId,
-                    subjectId = request.subjectId,
-                    score = request.score
+                    answers = answers
                 )
-                val result = submitDiagnostic(command)
-                call.respond(HttpStatusCode.Created, result.toResponse())
+                
+                submitDiagnostic(command)
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Diagnostic evaluation complete"))
             }
         }
     }

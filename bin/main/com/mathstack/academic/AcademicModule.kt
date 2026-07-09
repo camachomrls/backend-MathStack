@@ -24,7 +24,7 @@ val academicModule = module {
     single { CreateLessonTypeUseCase(get()) }
     single { ListLessonTypesUseCase(get()) }
     single { CreateLessonUseCase(get()) }
-    single { GetLessonsBySubjectUseCase(get()) }
+    single { GetLessonsBySubjectUseCase(get(), get()) }
     single { GetLessonByIdUseCase(get()) }
     single { CreateExerciseUseCase(get()) }
     single { GetExercisesByLessonUseCase(get()) }

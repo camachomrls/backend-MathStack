@@ -12,6 +12,7 @@ import org.koin.dsl.module
 
 val userModule = module {
     single<UserRepository> { PostgresUserRepository() }
+    single<com.mathstack.users.domain.repository.UserProficiencyRepository> { com.mathstack.users.infrastructure.persistence.PostgresUserProficiencyRepository() }
 
     single { CreateUserUseCase(get()) }
     single { DeleteUserUseCase(get()) }

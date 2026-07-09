@@ -36,6 +36,7 @@ import io.ktor.server.routing.patch
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import com.mathstack.shared.infrastructure.plugins.authorize
+import io.ktor.server.auth.principal
 
 fun Route.academicRouting() {
     val createSubject by inject<CreateSubjectUseCase>()
@@ -59,7 +60,10 @@ fun Route.academicRouting() {
             get("/subjects/{subjectId}/lessons") {
                 val subjectId = call.parameters["subjectId"]?.toIntOrNull()
                     ?: throw com.mathstack.shared.domain.exception.ValidationException("subjectId must be a valid integer")
-                call.respond(lessonsBySubject(subjectId).map { it.toResponse() })
+                val principal = call.principal<io.ktor.server.auth.jwt.JWTPrincipal>()
+                val userIdStr = principal?.payload?.subject ?: throw com.mathstack.shared.domain.exception.UnauthorizedException("Missing subject in JWT")
+                val userId = java.util.UUID.fromString(userIdStr)
+                call.respond(lessonsBySubject(subjectId, userId).map { it.toResponse() })
             }
             get("/lessons/{lessonId}/exercises") {
                 val lessonId = (call.parameters["lessonId"] ?: "").toUuid("lessonId")

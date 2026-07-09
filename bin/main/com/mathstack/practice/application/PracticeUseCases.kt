@@ -70,40 +70,37 @@ class LogPracticeSessionUseCase(
 }
 
 class SubmitDiagnosticAnswersUseCase(
-    private val practiceRepository: PracticeRepository,
-    private val academicRepository: com.mathstack.academic.domain.repository.AcademicRepository
+    private val academicRepository: com.mathstack.academic.domain.repository.AcademicRepository,
+    private val userProficiencyRepository: com.mathstack.users.domain.repository.UserProficiencyRepository,
+    private val userRepository: com.mathstack.users.domain.repository.UserRepository
 ) {
-    operator fun invoke(command: SubmitDiagnosticAnswersCommand): com.mathstack.practice.domain.model.DiagnosticResult {
-        // Calculate deficiency score based on some logic (e.g., using command.score or average metric)
-        val calculatedDeficiencyScore = 100 - command.score
+    operator fun invoke(command: SubmitDiagnosticAnswersCommand) {
+        val subjectScores = mutableMapOf<Int, Pair<Int, Int>>() // subjectId -> (correct, total)
 
-        val diagnosticResult = practiceRepository.createDiagnosticResult(
-            com.mathstack.practice.domain.model.DiagnosticResult(
-                id = UUID.randomUUID(),
-                userId = command.userId,
-                subjectId = command.subjectId,
-                deficiencyScore = calculatedDeficiencyScore,
-                evaluatedAt = LocalDateTime.now()
-            )
-        )
-
-        // Fetch all lessons for this subject
-        val lessons = academicRepository.listLessonsBySubject(command.subjectId)
-        
-        // Populate learning paths based on results
-        lessons.forEach { lesson ->
-            val status = if (calculatedDeficiencyScore > 50) "pending" else "in_progress"
-            practiceRepository.createLearningPath(
-                com.mathstack.practice.domain.model.LearningPath(
-                    userId = command.userId,
-                    lessonId = lesson.id,
-                    status = status,
-                    completedAt = null
-                )
+        command.answers.forEach { answer ->
+            val exercise = academicRepository.findExerciseById(answer.exerciseId) ?: return@forEach
+            val lesson = academicRepository.findLessonById(exercise.lessonId) ?: return@forEach
+            val current = subjectScores.getOrDefault(lesson.subjectId, Pair(0, 0))
+            subjectScores[lesson.subjectId] = Pair(
+                current.first + if (answer.isCorrect) 1 else 0,
+                current.second + 1
             )
         }
-        
-        return diagnosticResult
+
+        subjectScores.forEach { (subjectId, score) ->
+            val percentage = if (score.second > 0) (score.first.toDouble() / score.second) * 100 else 0.0
+            val level = when {
+                percentage >= 80 -> 3 
+                percentage >= 50 -> 2 
+                else -> 1
+            }
+            userProficiencyRepository.saveProficiency(command.userId, subjectId, level)
+        }
+
+        val stats = userRepository.findStatsByUserId(command.userId)
+        if (stats != null) {
+            userRepository.updateStats(stats.copy(lastDiagnosticDate = LocalDateTime.now()))
+        }
     }
 }
 
@@ -131,8 +128,12 @@ data class LogPracticeSessionCommand(
     val minutesSpent: Int,
 )
 
+data class DiagnosticAnswer(
+    val exerciseId: UUID,
+    val isCorrect: Boolean
+)
+
 data class SubmitDiagnosticAnswersCommand(
     val userId: UUID,
-    val subjectId: Int,
-    val score: Int
+    val answers: List<DiagnosticAnswer>
 )

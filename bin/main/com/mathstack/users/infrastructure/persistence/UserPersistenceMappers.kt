@@ -26,6 +26,7 @@ fun ResultRow.toUserGamificationStats(): UserGamificationStats =
         maxStreak = this[UserGamificationStatsTable.maxStreak],
         minutesPracticed = this[UserGamificationStatsTable.minutesPracticed],
         lastPracticeDate = this[UserGamificationStatsTable.lastPracticeDate],
+        lastDiagnosticDate = this[UserGamificationStatsTable.lastDiagnosticDate],
     )
 
 fun ResultRow.toUserGamificationStatsOrNull(): UserGamificationStats? {

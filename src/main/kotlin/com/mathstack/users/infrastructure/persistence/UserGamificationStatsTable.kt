@@ -2,6 +2,7 @@ package com.mathstack.users.infrastructure.persistence
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date
+import org.jetbrains.exposed.sql.javatime.datetime
 
 object UserGamificationStatsTable : Table("user_gamification_stats") {
     val userId = uuid("user_id").references(UserTable.id)
@@ -13,6 +14,7 @@ object UserGamificationStatsTable : Table("user_gamification_stats") {
     val maxStreak = integer("max_streak")
     val minutesPracticed = integer("minutes_practiced")
     val lastPracticeDate = date("last_practice_date").nullable()
+    val lastDiagnosticDate = datetime("last_diagnostic_date").nullable()
 
     override val primaryKey = PrimaryKey(userId)
 }

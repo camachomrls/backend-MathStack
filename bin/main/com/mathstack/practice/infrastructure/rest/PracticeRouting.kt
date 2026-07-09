@@ -25,6 +25,9 @@ fun Route.practiceRouting() {
     val registerExerciseAttempt by inject<RegisterExerciseAttemptUseCase>()
     val logPracticeSession by inject<LogPracticeSessionUseCase>()
     val getDashboardMetrics by inject<GetStudentDashboardMetricsUseCase>()
+    val generateDiagnosticQuiz by inject<com.mathstack.practice.application.GenerateDiagnosticQuizUseCase>()
+    val submitDiagnostic by inject<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
+    val listSubjects by inject<com.mathstack.academic.application.ListSubjectsUseCase>()
 
     authenticate("auth-jwt") {
         route("/api/v1/practice/users/{userId}") {
@@ -62,8 +65,7 @@ fun Route.practiceRouting() {
             }
 
             get("/diagnostics/generate") {
-                val generateQuiz = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.practice.application.GenerateDiagnosticQuizUseCase>()
-                val exercises = generateQuiz()
+                val exercises = generateDiagnosticQuiz()
                 // Map exercises to DTO (assume toResponse exists in AcademicDtos)
                 val responseList = exercises.map { com.mathstack.academic.infrastructure.rest.dto.ExerciseResponse(
                     id = it.id.toString(),
@@ -78,7 +80,6 @@ fun Route.practiceRouting() {
                 val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
                 val userId = UUID.fromString(userIdStr)
                 val request = call.receive<com.mathstack.practice.infrastructure.rest.dto.SubmitDiagnosticRequest>()
-                val submitDiagnostic = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
                 
                 val answers = request.answers.map { 
                     com.mathstack.practice.application.DiagnosticAnswer(UUID.fromString(it.exerciseId), it.isCorrect) 
@@ -94,7 +95,6 @@ fun Route.practiceRouting() {
                 // Map the subjectIds to their names using AcademicUseCase or direct repo query.
                 // Since this is a routing block, we can resolve subject names manually or just return subjectId for the frontend to map.
                 // Let's just return a generic map and the frontend can map it, or we fetch the subject names here.
-                val listSubjects = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.academic.application.ListSubjectsUseCase>()
                 val subjects = listSubjects()
                 
                 val responseList = results.map { res ->

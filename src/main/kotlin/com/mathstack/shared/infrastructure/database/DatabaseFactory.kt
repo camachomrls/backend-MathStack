@@ -20,6 +20,7 @@ import com.mathstack.store.infrastructure.persistence.StoreItemTable
 import com.mathstack.store.infrastructure.persistence.UserInventoryTable
 import com.mathstack.users.infrastructure.persistence.UserGamificationStatsTable
 import com.mathstack.users.infrastructure.persistence.UserTable
+import com.mathstack.users.infrastructure.persistence.UserProficiencyTable
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.config.ApplicationConfig
 import org.jetbrains.exposed.sql.Database
@@ -54,7 +55,8 @@ object DatabaseFactory {
                 AdminChallengesTable,
                 AdminSettingsTable,
                 GroupsTable,
-                GroupMembersTable
+                GroupMembersTable,
+                UserProficiencyTable
             )
 
             val defaultSubjects = listOf(

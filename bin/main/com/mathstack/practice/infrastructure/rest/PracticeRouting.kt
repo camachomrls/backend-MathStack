@@ -89,8 +89,24 @@ fun Route.practiceRouting() {
                     answers = answers
                 )
                 
-                submitDiagnostic(command)
-                call.respond(HttpStatusCode.OK, mapOf("message" to "Diagnostic evaluation complete"))
+                val results = submitDiagnostic(command)
+                
+                // Map the subjectIds to their names using AcademicUseCase or direct repo query.
+                // Since this is a routing block, we can resolve subject names manually or just return subjectId for the frontend to map.
+                // Let's just return a generic map and the frontend can map it, or we fetch the subject names here.
+                val listSubjects = org.koin.java.KoinJavaComponent.getKoin().get<com.mathstack.academic.application.ListSubjectsUseCase>()
+                val subjects = listSubjects()
+                
+                val responseList = results.map { res ->
+                    val subjectName = subjects.find { it.id == res.subjectId }?.name ?: "Materia desconocida"
+                    mapOf(
+                        "subjectId" to res.subjectId,
+                        "subject" to subjectName,
+                        "score" to res.scorePercentage
+                    )
+                }
+                
+                call.respond(HttpStatusCode.OK, responseList)
             }
         }
     }

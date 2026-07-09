@@ -74,7 +74,7 @@ class SubmitDiagnosticAnswersUseCase(
     private val userProficiencyRepository: com.mathstack.users.domain.repository.UserProficiencyRepository,
     private val userRepository: com.mathstack.users.domain.repository.UserRepository
 ) {
-    operator fun invoke(command: SubmitDiagnosticAnswersCommand) {
+    operator fun invoke(command: SubmitDiagnosticAnswersCommand): List<DiagnosticSubjectScore> {
         val subjectScores = mutableMapOf<Int, Pair<Int, Int>>() // subjectId -> (correct, total)
 
         command.answers.forEach { answer ->
@@ -101,8 +101,18 @@ class SubmitDiagnosticAnswersUseCase(
         if (stats != null) {
             userRepository.updateStats(stats.copy(lastDiagnosticDate = LocalDateTime.now()))
         }
+
+        return subjectScores.map { (subjectId, score) ->
+            val percentage = if (score.second > 0) (score.first.toDouble() / score.second) * 100 else 0.0
+            DiagnosticSubjectScore(subjectId, percentage)
+        }
     }
 }
+
+data class DiagnosticSubjectScore(
+    val subjectId: Int,
+    val scorePercentage: Double
+)
 
 class GetStudentDashboardMetricsUseCase(private val repository: PracticeRepository) {
     operator fun invoke(userId: UUID): StudentDashboardMetrics {

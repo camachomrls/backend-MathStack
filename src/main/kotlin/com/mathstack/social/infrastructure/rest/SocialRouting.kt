@@ -33,6 +33,7 @@ fun Route.socialRouting() {
     val listFriends by inject<ListFriendsUseCase>()
     val createChallenge by inject<CreateChallengeUseCase>()
     val submitChallengeResult by inject<SubmitChallengeResultUseCase>()
+    val listAllChallengesUseCase by inject<com.mathstack.admin.application.ListAllChallengesUseCase>()
 
     authenticate("auth-jwt") {
         route("/api/v1/social") {
@@ -73,6 +74,11 @@ fun Route.socialRouting() {
             }
 
             route("/challenges") {
+                get("/global") {
+                    val challenges = listAllChallengesUseCase().filter { it.isActive }
+                    call.respond(HttpStatusCode.OK, challenges)
+                }
+
                 post {
                     val principal = call.principal<JWTPrincipal>() ?: throw com.mathstack.shared.domain.exception.UnauthorizedException("Token missing")
                     val userIdStr = principal.payload.getClaim("user_id")?.asString() ?: principal.payload.subject

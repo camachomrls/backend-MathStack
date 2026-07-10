@@ -24,6 +24,7 @@ data class GroupDetailsDto(
     val activeChallenges: Int,
     val totalXp: Int,
     val color: String,
+    val activeLevelId: String?,
     val members: List<GroupMemberDto>
 )
 
@@ -60,6 +61,7 @@ class GetGroupDetailsUseCase(
             activeChallenges = group.activeChallenges,
             totalXp = group.totalXp,
             color = group.color,
+            activeLevelId = group.activeLevelId?.toString(),
             members = membersDto
         )
     }

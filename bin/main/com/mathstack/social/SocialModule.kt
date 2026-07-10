@@ -9,6 +9,7 @@ import com.mathstack.social.application.CreateGroupUseCase
 import com.mathstack.social.application.AddGroupMemberUseCase
 import com.mathstack.social.application.ListGroupsUseCase
 import com.mathstack.social.application.GetGroupDetailsUseCase
+import com.mathstack.social.application.UpdateGroupActiveLevelUseCase
 import com.mathstack.social.domain.repository.SocialRepository
 import com.mathstack.social.domain.repository.GroupRepository
 import com.mathstack.social.infrastructure.persistence.PostgresSocialRepository
@@ -29,4 +30,5 @@ val socialModule = module {
     single { AddGroupMemberUseCase(get(), get()) }
     single { ListGroupsUseCase(get()) }
     single { GetGroupDetailsUseCase(get(), get()) }
+    single { UpdateGroupActiveLevelUseCase(get()) }
 }

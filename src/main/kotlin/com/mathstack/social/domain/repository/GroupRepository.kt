@@ -7,6 +7,7 @@ import java.util.UUID
 interface GroupRepository {
     fun createGroup(group: Group): Group
     fun getGroupById(groupId: UUID): Group?
+    fun updateGroup(group: Group): Group
     fun getGroupsByUserId(userId: UUID): List<Group>
     fun addMember(member: GroupMember): GroupMember
     fun getGroupMembers(groupId: UUID): List<GroupMember>

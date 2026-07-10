@@ -21,6 +21,7 @@ fun Route.groupsRouting() {
     val addGroupMember by inject<AddGroupMemberUseCase>()
     val listGroups by inject<ListGroupsUseCase>()
     val getGroupDetails by inject<GetGroupDetailsUseCase>()
+    val updateGroupActiveLevel by inject<UpdateGroupActiveLevelUseCase>()
 
     authenticate("auth-jwt") {
         route("/api/v1/social/groups") {
@@ -73,6 +74,24 @@ fun Route.groupsRouting() {
                 val member = addGroupMember(command)
                 call.respond(HttpStatusCode.OK, mapOf("status" to "success", "message" to "Member added successfully"))
             }
+            
+            post("/{id}/active-level") {
+                val principal = call.principal<JWTPrincipal>() ?: throw com.mathstack.shared.domain.exception.UnauthorizedException("Token missing")
+                val userIdStr = principal.payload.getClaim("user_id")?.asString() ?: principal.payload.subject
+                val userId = UUID.fromString(userIdStr)
+                val groupIdStr = call.parameters["id"] ?: throw IllegalArgumentException("groupId is required")
+                val groupId = UUID.fromString(groupIdStr)
+                
+                val request = call.receive<UpdateGroupActiveLevelRequest>()
+                updateGroupActiveLevel(groupId, userId, UUID.fromString(request.levelId))
+                
+                call.respond(HttpStatusCode.OK, mapOf("status" to "success", "message" to "Active level updated"))
+            }
         }
     }
 }
+
+@kotlinx.serialization.Serializable
+data class UpdateGroupActiveLevelRequest(
+    val levelId: String
+)

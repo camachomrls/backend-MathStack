@@ -41,6 +41,7 @@ object GroupsTable : Table("groups") {
     val activeChallenges = integer("active_challenges").default(0)
     val totalXp = integer("total_xp").default(0)
     val color = varchar("color", 50).default("from-blue-500 to-blue-600")
+    val activeLevelId = uuid("active_level_id").nullable()
     
     override val primaryKey = PrimaryKey(id)
 }

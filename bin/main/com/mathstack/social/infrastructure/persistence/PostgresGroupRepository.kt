@@ -19,7 +19,8 @@ class PostgresGroupRepository : GroupRepository {
         createdAt = this[GroupsTable.createdAt],
         activeChallenges = this[GroupsTable.activeChallenges],
         totalXp = this[GroupsTable.totalXp],
-        color = this[GroupsTable.color]
+        color = this[GroupsTable.color],
+        activeLevelId = this[GroupsTable.activeLevelId]
     )
 
     private fun ResultRow.toGroupMember() = GroupMember(
@@ -41,6 +42,7 @@ class PostgresGroupRepository : GroupRepository {
             it[activeChallenges] = group.activeChallenges
             it[totalXp] = group.totalXp
             it[color] = group.color
+            it[activeLevelId] = group.activeLevelId
         }
         group
     }
@@ -49,6 +51,20 @@ class PostgresGroupRepository : GroupRepository {
         GroupsTable.selectAll().where { GroupsTable.id eq groupId }
             .map { it.toGroup() }
             .singleOrNull()
+    }
+
+    override fun updateGroup(group: Group): Group = transaction {
+        GroupsTable.update({ GroupsTable.id eq group.id }) {
+            it[name] = group.name
+            it[description] = group.description
+            it[subject] = group.subject
+            it[maxMembers] = group.maxMembers
+            it[activeChallenges] = group.activeChallenges
+            it[totalXp] = group.totalXp
+            it[color] = group.color
+            it[activeLevelId] = group.activeLevelId
+        }
+        group
     }
 
     override fun getGroupsByUserId(userId: UUID): List<Group> = transaction {

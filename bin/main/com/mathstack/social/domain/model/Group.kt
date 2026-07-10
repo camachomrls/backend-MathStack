@@ -13,5 +13,6 @@ data class Group(
     val createdAt: LocalDateTime,
     val activeChallenges: Int = 0,
     val totalXp: Int = 0,
-    val color: String = "from-blue-500 to-blue-600"
+    val color: String = "from-blue-500 to-blue-600",
+    val activeLevelId: UUID? = null
 )

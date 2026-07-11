@@ -104,7 +104,15 @@ class PostgresPracticeRepository : PracticeRepository {
         DiagnosticResultsTable.selectAll().map { it.toDiagnosticResult() }
     }
 
+    override fun findDiagnosticsByUserId(userId: UUID): List<com.mathstack.practice.domain.model.DiagnosticResult> = transaction {
+        DiagnosticResultsTable.selectAll().where { DiagnosticResultsTable.userId eq userId }.map { it.toDiagnosticResult() }
+    }
+
     override fun findAllSessions(): List<PracticeSession> = transaction {
         PracticeSessionsTable.selectAll().map { it.toPracticeSession() }
+    }
+
+    override fun findLearningPathsByUserId(userId: UUID): List<com.mathstack.practice.domain.model.LearningPath> = transaction {
+        LearningPathsTable.selectAll().where { LearningPathsTable.userId eq userId }.map { it.toLearningPath() }
     }
 }

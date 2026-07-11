@@ -27,6 +27,7 @@ fun Route.practiceRouting() {
     val getDashboardMetrics by inject<GetStudentDashboardMetricsUseCase>()
     val generateDiagnosticQuiz by inject<com.mathstack.practice.application.GenerateDiagnosticQuizUseCase>()
     val submitDiagnostic by inject<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
+    val getLearningPath by inject<com.mathstack.practice.application.GetLearningPathUseCase>()
     val listSubjects by inject<com.mathstack.academic.application.ListSubjectsUseCase>()
 
     authenticate("auth-jwt") {
@@ -62,6 +63,27 @@ fun Route.practiceRouting() {
                 val userId = UUID.fromString(userIdStr)
                 val metrics = getDashboardMetrics(userId)
                 call.respond(HttpStatusCode.OK, metrics.toResponse())
+            }
+
+            get("/learning-path") {
+                val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
+                val userId = UUID.fromString(userIdStr)
+                val path = getLearningPath(userId)
+                
+                val response = com.mathstack.practice.infrastructure.rest.dto.LearningPathResponse(
+                    subjectId = path.subjectId,
+                    subjectName = path.subjectName,
+                    lessons = path.lessons.map { 
+                        com.mathstack.practice.infrastructure.rest.dto.LearningPathLessonResponse(
+                            id = it.id,
+                            title = it.title,
+                            difficultyLevel = it.difficultyLevel,
+                            xp = it.xp,
+                            status = it.status
+                        ) 
+                    }
+                )
+                call.respond(HttpStatusCode.OK, response)
             }
 
             get("/diagnostics/generate") {

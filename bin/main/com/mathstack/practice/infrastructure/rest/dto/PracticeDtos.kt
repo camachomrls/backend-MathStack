@@ -92,3 +92,19 @@ fun com.mathstack.practice.domain.model.DiagnosticResult.toResponse() = Diagnost
     deficiencyScore = deficiencyScore,
     evaluatedAt = evaluatedAt.toString()
 )
+
+@Serializable
+data class LearningPathLessonResponse(
+    val id: String,
+    val title: String,
+    val difficultyLevel: Int,
+    val xp: Int,
+    val status: String
+)
+
+@Serializable
+data class LearningPathResponse(
+    val subjectId: Int,
+    val subjectName: String,
+    val lessons: List<LearningPathLessonResponse>
+)

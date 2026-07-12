@@ -27,6 +27,7 @@ fun Application.module() {
     configureSecurity()
     configureSwagger()
     DatabaseFactory.init(environment.config)
+    com.mathstack.shared.infrastructure.database.DatabaseSeeder.seed()
 
     routing {
         userRouting()

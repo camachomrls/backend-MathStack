@@ -109,6 +109,12 @@ class SubmitDiagnosticAnswersUseCase(
     }
 }
 
+class CompleteLessonUseCase(private val repository: PracticeRepository) {
+    operator fun invoke(userId: UUID, lessonId: UUID) {
+        repository.updateLearningPathStatus(userId, lessonId, "completed", LocalDateTime.now())
+    }
+}
+
 data class DiagnosticSubjectScore(
     val subjectId: Int,
     val scorePercentage: Double

@@ -108,3 +108,13 @@ data class LearningPathResponse(
     val subjectName: String,
     val lessons: List<LearningPathLessonResponse>
 )
+
+@Serializable
+data class DiagnosticQuestionResponse(
+    val id: String,
+    val lessonId: String,
+    val content: String,
+    val conceptTested: String?,
+    val subjectId: Int,
+    val subjectName: String
+)

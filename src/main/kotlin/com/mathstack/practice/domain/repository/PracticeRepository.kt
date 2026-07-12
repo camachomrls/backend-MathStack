@@ -15,6 +15,7 @@ interface PracticeRepository {
     
     fun createDiagnosticResult(result: com.mathstack.practice.domain.model.DiagnosticResult): com.mathstack.practice.domain.model.DiagnosticResult
     fun createLearningPath(path: com.mathstack.practice.domain.model.LearningPath): com.mathstack.practice.domain.model.LearningPath
+    fun updateLearningPathStatus(userId: UUID, lessonId: UUID, status: String, completedAt: java.time.LocalDateTime?): Boolean
     
     fun findAllDiagnostics(): List<com.mathstack.practice.domain.model.DiagnosticResult>
     fun findDiagnosticsByUserId(userId: UUID): List<com.mathstack.practice.domain.model.DiagnosticResult>

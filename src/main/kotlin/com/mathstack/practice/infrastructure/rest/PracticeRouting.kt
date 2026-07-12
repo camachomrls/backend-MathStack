@@ -28,6 +28,7 @@ fun Route.practiceRouting() {
     val generateDiagnosticQuiz by inject<com.mathstack.practice.application.GenerateDiagnosticQuizUseCase>()
     val submitDiagnostic by inject<com.mathstack.practice.application.SubmitDiagnosticAnswersUseCase>()
     val getLearningPath by inject<com.mathstack.practice.application.GetLearningPathUseCase>()
+    val completeLesson by inject<com.mathstack.practice.application.CompleteLessonUseCase>()
     val listSubjects by inject<com.mathstack.academic.application.ListSubjectsUseCase>()
 
     authenticate("auth-jwt") {
@@ -68,33 +69,39 @@ fun Route.practiceRouting() {
             get("/learning-path") {
                 val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
                 val userId = UUID.fromString(userIdStr)
-                val path = getLearningPath(userId)
+                val paths = getLearningPath(userId)
                 
-                val response = com.mathstack.practice.infrastructure.rest.dto.LearningPathResponse(
-                    subjectId = path.subjectId,
-                    subjectName = path.subjectName,
-                    lessons = path.lessons.map { 
-                        com.mathstack.practice.infrastructure.rest.dto.LearningPathLessonResponse(
-                            id = it.id,
-                            title = it.title,
-                            difficultyLevel = it.difficultyLevel,
-                            xp = it.xp,
-                            status = it.status
-                        ) 
-                    }
-                )
-                call.respond(HttpStatusCode.OK, response)
+                val responseList = paths.map { path ->
+                    com.mathstack.practice.infrastructure.rest.dto.LearningPathResponse(
+                        subjectId = path.subjectId,
+                        subjectName = path.subjectName,
+                        lessons = path.lessons.map { 
+                            com.mathstack.practice.infrastructure.rest.dto.LearningPathLessonResponse(
+                                id = it.id,
+                                title = it.title,
+                                difficultyLevel = it.difficultyLevel,
+                                xp = it.xp,
+                                status = it.status
+                            ) 
+                        }
+                    )
+                }
+                call.respond(HttpStatusCode.OK, responseList)
+            }
+
+            post("/lessons/{lessonId}/complete") {
+                val userIdStr = call.parameters["userId"] ?: throw IllegalArgumentException("userId is required")
+                val lessonIdStr = call.parameters["lessonId"] ?: throw IllegalArgumentException("lessonId is required")
+                val userId = UUID.fromString(userIdStr)
+                val lessonId = UUID.fromString(lessonIdStr)
+                
+                completeLesson(userId, lessonId)
+                
+                call.respond(HttpStatusCode.OK, mapOf("status" to "success", "message" to "Lesson marked as completed"))
             }
 
             get("/diagnostics/generate") {
-                val exercises = generateDiagnosticQuiz()
-                // Map exercises to DTO (assume toResponse exists in AcademicDtos)
-                val responseList = exercises.map { com.mathstack.academic.infrastructure.rest.dto.ExerciseResponse(
-                    id = it.id.toString(),
-                    lessonId = it.lessonId.toString(),
-                    content = it.content,
-                    conceptTested = it.conceptTested
-                ) }
+                val responseList = generateDiagnosticQuiz()
                 call.respond(HttpStatusCode.OK, responseList)
             }
 
